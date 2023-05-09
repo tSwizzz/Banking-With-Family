@@ -38,13 +38,54 @@ contract BankAccount {
     uint nextAccountId;
     uint nextWithdrawId;
 
+    modifier accountOwner(uint accountId) {
+        bool isOwner;
+        for(uint k; k < accounts[accountId].owners.length; k++) {
+            if(msg.sender == accounts[accountId].owners[k]) {
+                isOwner = true;
+                break;
+            }
+        }
+        require(isOwner, "you are not an owner of this account");
+        _;
+    }
 
-    function deposit(uint accountId) external payable {
+    modifier validOwners(address[] calldata owners) {
+        require(owners.length + 1 <= 4, "maximum of 4 owners per account");
+        for(uint k; k < owners.length; k++) {
+            for(uint f = k + 1; f < owners.length; f++) {
+                if(owners[k] = owners[f]) {
+                    revert("no duplicate owners");
+                }
+            }
+        }
+        _;
+    }
 
+    function deposit(uint accountId) external payable accountOwner(accountId) {
+        accounts[accountId].balance += msg.value;
     }
 
     function createAccount(address[] calldata otherOwners) external {
+        address[] memory owners = new address[](otherOwners.length + 1);
+        owners[otherOwners.length] = msg.sender;
 
+        uint id = nextAccountId;
+
+        for(uint k; k < owners.length; k++) {
+            if(k < owners.length - 1) {
+                owners[k] = otherOwners[k];
+            }
+
+            if(userAccounts[owners[k]].length > 2) {
+                revert("each user can have a max of 3 accounts");
+            }
+            userAccounts[owners[k]].push(id);
+        }
+
+        accounts[id].owners = owners;
+        nextAccountId++;
+        emit AccountCreated(owners, id, block.timestamp);
     }
 
     function requestWithdrawal(uint accountId, uint amount) external {
