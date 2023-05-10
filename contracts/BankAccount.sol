@@ -75,10 +75,10 @@ contract BankAccount {
     }
 
     modifier canApprove(uint256 accountId, uint256 withdrawId) {
-        require(accounts[accountId].withdrawRequests[withdrawId].approved, "this request is already approved");
+        require(!accounts[accountId].withdrawRequests[withdrawId].approved, "this request is already approved");
         require(accounts[accountId].withdrawRequests[withdrawId].user != msg.sender, "you cannot approve this request");
         require(accounts[accountId].withdrawRequests[withdrawId].user != address(0), "this request does not exist");
-        require(accounts[accountId].withdrawRequests[withdrawId].ownersApproved[msg.sender], "you have already approved this request");
+        require(!accounts[accountId].withdrawRequests[withdrawId].ownersApproved[msg.sender], "you have already approved this request");
         _;
     }
 
