@@ -1,7 +1,11 @@
-pragma solidity ^0.8.19;
+pragma solidity >=0.4.22 <=0.8.19;
 
 contract BankAccount {
-    
+    event AccountCreated(
+        address[] owners, 
+        uint256 indexed id, 
+        uint256 timestamp
+    );
     event Deposit(
         address indexed user,
         uint256 indexed accountId,
@@ -19,18 +23,12 @@ contract BankAccount {
         uint256 indexed withdrawId, 
         uint256 timestamp
     );
-    event AccountCreated(
-        address[] owners, 
-        uint256 indexed id, 
-        uint256 timestamp
-    );
 
     struct Account {
         address[] owners;
         uint256 balance;
         mapping(uint256 => WithdrawRequest) withdrawRequests;
     }
-
     struct WithdrawRequest {
         address user;
         uint256 amount;
@@ -61,7 +59,7 @@ contract BankAccount {
         require(owners.length + 1 <= 4, "maximum of 4 owners per account");
         for(uint256 k; k < owners.length; k++) {
             for(uint256 f = k + 1; f < owners.length; f++) {
-                if(owners[k] = owners[f]) {
+                if(owners[k] == owners[f]) {
                     revert("no duplicate owners allowed");
                 }
             }
@@ -85,6 +83,7 @@ contract BankAccount {
     modifier canWithdraw(uint accountId, uint withdrawId) {
         require(accounts[accountId].withdrawRequests[withdrawId].user == msg.sender, "you did not create this request");
         require(accounts[accountId].withdrawRequests[withdrawId].approved, "this request is not approved");
+        _;
     }
 
     function deposit(uint256 accountId) 
