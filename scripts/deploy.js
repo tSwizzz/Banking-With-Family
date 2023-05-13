@@ -2,11 +2,11 @@ const hre = require("hardhat");
 const fs = require("fs/promises");
 
 async function main() {
-  const BankAccount = await hre.ethers.getContractFactory("BankAccount");
-  const bankAccount = await BankAccount.deploy();
+  const BankAccount = await hre.ethers.getContractFactory("BankAccount"); //grab contract
+  const bankAccount = await BankAccount.deploy(); //create instance of contract in bankAccount
 
-  await bankAccount.deployed();
-  await writeDeploymentInfo(bankAccount);
+  await bankAccount.deployed(); //make sure it gets deployed w/ no errors
+  await writeDeploymentInfo(bankAccount); //now set up the data/info
 }
 
 async function writeDeploymentInfo(contract) {
@@ -18,7 +18,11 @@ async function writeDeploymentInfo(contract) {
     },
   };
 
-  const content = JSON.stringify(data, null, 2);
+  const content = JSON.stringify(data, null, 2); //create into a string
+
+  // this code writes some content to a file named deployment.json using the fs module,
+  // and waits for the write operation to complete before proceeding with the rest of the program.
+  // basically creates deployment.json file
   await fs.writeFile("deployment.json", content, { encoding: "utf-8" });
 }
 
