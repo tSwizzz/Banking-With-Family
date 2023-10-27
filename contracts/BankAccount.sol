@@ -108,18 +108,15 @@ contract BankAccount {
         _;
     }
 
-    function deposit(uint256 accountId)
-        external
-        payable
-        accountOwner(accountId)
-    {
+    function deposit(
+        uint256 accountId
+    ) external payable accountOwner(accountId) {
         accounts[accountId].balance += msg.value;
     }
 
-    function createAccount(address[] calldata otherOwners)
-        external
-        validOwners(otherOwners)
-    {
+    function createAccount(
+        address[] calldata otherOwners
+    ) external validOwners(otherOwners) {
         address[] memory owners = new address[](otherOwners.length + 1);
         owners[otherOwners.length] = msg.sender;
 
@@ -141,11 +138,10 @@ contract BankAccount {
         emit AccountCreated(owners, id, block.timestamp);
     }
 
-    function requestWithdrawal(uint256 accountId, uint256 amount)
-        external
-        accountOwner(accountId)
-        sufficientBalance(accountId, amount)
-    {
+    function requestWithdrawal(
+        uint256 accountId,
+        uint256 amount
+    ) external accountOwner(accountId) sufficientBalance(accountId, amount) {
         uint256 id = nextWithdrawId;
         WithdrawRequest storage request = accounts[accountId].withdrawRequests[
             id
@@ -162,11 +158,10 @@ contract BankAccount {
         );
     }
 
-    function approveWithdrawal(uint256 accountId, uint256 withdrawId)
-        external
-        accountOwner(accountId)
-        canApprove(accountId, withdrawId)
-    {
+    function approveWithdrawal(
+        uint256 accountId,
+        uint256 withdrawId
+    ) external accountOwner(accountId) canApprove(accountId, withdrawId) {
         WithdrawRequest storage request = accounts[accountId].withdrawRequests[
             withdrawId
         ];
@@ -178,10 +173,10 @@ contract BankAccount {
         }
     }
 
-    function withdraw(uint256 accountId, uint256 withdrawId)
-        external
-        canWithdraw(accountId, withdrawId)
-    {
+    function withdraw(
+        uint256 accountId,
+        uint256 withdrawId
+    ) external canWithdraw(accountId, withdrawId) {
         uint256 amount = accounts[accountId]
             .withdrawRequests[withdrawId]
             .amount;
@@ -200,19 +195,16 @@ contract BankAccount {
         return accounts[accountId].balance;
     }
 
-    function getOwners(uint256 accountId)
-        public
-        view
-        returns (address[] memory)
-    {
+    function getOwners(
+        uint256 accountId
+    ) public view returns (address[] memory) {
         return accounts[accountId].owners;
     }
 
-    function getApprovals(uint256 accountId, uint256 withdrawId)
-        public
-        view
-        returns (uint256)
-    {
+    function getApprovals(
+        uint256 accountId,
+        uint256 withdrawId
+    ) public view returns (uint256) {
         return accounts[accountId].withdrawRequests[withdrawId].approvals;
     }
 

@@ -14,7 +14,7 @@ const abi = [
   "function requestWithdrawal(uint256 accountId, uint256 amount)",
   "function withdraw(uint256 accountId, uint256 withdrawId)",
 ];
-const address = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const address = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
 let contract = null;
 
 async function createAccount() {
@@ -37,7 +37,7 @@ async function viewAccounts() {
 
 async function getAccess() {
   if (contract) return;
-  await provider.send("eth_requestAccounts", []);
+  await provider.send("eth_requestAccounts", []); //request access to users accounts
   const signer = provider.getSigner();
   contract = new ethers.Contract(address, abi, signer);
 
